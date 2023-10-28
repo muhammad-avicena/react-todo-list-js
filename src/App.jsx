@@ -1,14 +1,34 @@
-import { useEffect, useState } from "react";
+import { DashboardPage, LoginPage, RegisterPage, NotFoundPage } from "./pages";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { UserProvider } from "./hooks/UserContext";
 import "./App.css";
-import Column from "./components/Column";
-import KanbanBoard from "./components/Kanbanboard";
-import Task from "./components/Task";
 
 function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <LoginPage />,
+    },
+    {
+      path: "/register",
+      element: <RegisterPage />,
+    },
+    {
+      path: "/dashboard",
+      element: <DashboardPage />,
+    },
+    {
+      path: "*",
+      element: <NotFoundPage />,
+    },
+  ]);
+
   return (
-    <div className="App">
-      <KanbanBoard />
-    </div>
+    <>
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
+    </>
   );
 }
 

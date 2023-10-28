@@ -1,5 +1,8 @@
 import * as React from "react";
 
+import KanbanBoard from "../KanbanBoard";
+import Dashboard from "../Dashboard";
+
 // MUI Components
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -20,8 +23,9 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 
 const drawerWidth = 240;
 
@@ -92,6 +96,7 @@ const Drawer = styled(MuiDrawer, {
 export default function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [menuData, setMenuData] = React.useState("Dashboard");
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -99,6 +104,15 @@ export default function MiniDrawer() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleListItemClick = (text) => {
+    setMenuData(text);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("token");
+    window.location.href = "/";
   };
 
   return (
@@ -119,7 +133,7 @@ export default function MiniDrawer() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Kanban Board
+            Task Management System
           </Typography>
         </Toolbar>
       </AppBar>
@@ -135,7 +149,12 @@ export default function MiniDrawer() {
         </DrawerHeader>
         <Divider />
         <List>
-          <ListItem key={"Dashboard"} disablePadding sx={{ display: "block" }}>
+          <ListItem
+            key={"Dashboard"}
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => handleListItemClick("Dashboard")}
+          >
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -158,10 +177,43 @@ export default function MiniDrawer() {
               />
             </ListItemButton>
           </ListItem>
+          <ListItem
+            key={"Progress Board"}
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => handleListItemClick("Progress Board")}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <ViewKanbanIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Progress Board"}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
         <Divider />
         <List>
-          <ListItem key={"Log Out"} disablePadding sx={{ display: "block" }}>
+          <ListItem
+            key={"Log Out"}
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleLogout}
+          >
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -188,21 +240,8 @@ export default function MiniDrawer() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-          dolor purus non enim praesent elementum facilisis leo vel. Risus at
-          ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
-          quisque non tellus. Convallis convallis tellus id interdum velit
-          laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
-          adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
-          integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
-          eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
-          quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-          vivamus at augue. At augue eget arcu dictum varius duis at consectetur
-          lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
-          faucibus et molestie ac.
-        </Typography>
+        {menuData === "Dashboard" && <Dashboard />}
+        {menuData === "Progress Board" && <KanbanBoard />}
       </Box>
     </Box>
   );

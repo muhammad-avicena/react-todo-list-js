@@ -1,5 +1,10 @@
-import { KanbanBoardComponent } from "../../components";
-
+import { SideNavComponent } from "../../components";
 export default function DashboardPage() {
-  return <KanbanBoardComponent />;
+  const token = sessionStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "/";
+  }
+
+  return <SideNavComponent />;
 }

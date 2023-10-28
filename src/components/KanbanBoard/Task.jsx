@@ -66,8 +66,7 @@ export default function Task({ task, index, fetchData }) {
 
   const priorities = ["High", "Medium", "Low"];
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImF2aWNlbmEiLCJpZCI6IjY1MzczMzk1NzZlYzA1MzI5ZDNiNWJlZiIsInJvbGUiOiJtZW1iZXIiLCJpYXQiOjE2OTgzMzk0OTcsImV4cCI6MTY5ODQyNTg5N30.Il2AMLprOR-QNQhMhbCxLaUK_lvHfdfITqRClLwzjIA";
+  const token = sessionStorage.getItem("token");
 
   const handleOpenEditModal = () => {
     setEditedTask({ ...task });
@@ -87,11 +86,11 @@ export default function Task({ task, index, fetchData }) {
   };
 
   const getPriorityColor = (status) => {
-    if (status === "low") {
+    if (status === "Low") {
       return "success";
-    } else if (status === "medium") {
+    } else if (status === "Medium") {
       return "warning";
-    } else if (status === "high") {
+    } else if (status === "High") {
       return "error";
     } else {
       return "primary";
@@ -116,13 +115,30 @@ export default function Task({ task, index, fetchData }) {
     }
   };
 
-  const handleSaveEdit = () => {
-    // Save the edited task details
-    // You can send these details to your API to update the task on the server
-    // Assuming you have an updateTask function for that purpose
-    // updateTask(task._id, editedTask);
+  const handleSaveEdit = (id) => {
     console.log(editedTask);
-    setEditing(false); // Close the modal
+    axios
+      .put(
+        `${API_URL}/todos/${id}`,
+        {
+          activity: editedTask.activity,
+          dueDate: editedTask.dueDate,
+          priority: editedTask.priority,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setEditing(false);
+        fetchData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleDelete = (id) => {
@@ -257,13 +273,7 @@ export default function Task({ task, index, fetchData }) {
             <InputLabel>Priority</InputLabel>
             <Select
               label="Priority"
-              value={
-                editedTask.priority === "high"
-                  ? "High"
-                  : editedTask.priority === "medium"
-                  ? "Medium"
-                  : "Low"
-              }
+              value={editedTask.priority}
               onChange={(e) =>
                 setEditedTask({ ...editedTask, priority: e.target.value })
               }
@@ -278,7 +288,7 @@ export default function Task({ task, index, fetchData }) {
           <Button
             sx={{ marginTop: 2 }}
             variant="contained"
-            onClick={handleSaveEdit}
+            onClick={() => handleSaveEdit(task._id)}
           >
             Save
           </Button>
